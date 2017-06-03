@@ -7,4 +7,5 @@ Selenium 3.0
 TestNG
 
 Test scipt located in: src/testCases/PizzaTC.java
+
 Page objects classes here: src/pageObjects/
