@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project[
+]>
+		<!--  project name -->
+<project name="Automation Engineer Chalelenge" default="usage" basedir=".">
+    
+ <!-- ====================Initialize Properties===================== -->
+ 	<property environment="env"/>
+ 	
+ 	<!-- enviroment variables: ws.home, ws.jars, etc. Change only two first property values
+ 		if you will move build.xml and folder with jar files -->
+ 	
+ 		<!-- ws.home: where is your workspacehome, where is your project
+		basedir means directory where is build.xml present -->
+ 	<property name="ws.home" value="${basedir}"/>
+ 	
+ 	<!-- ws.jarsL where are all jar files associated with this project
+ 		ANT automatycly detects Java jar files. But we have to tell 
+ 		where is JUnit etc jar files -->
+ 	<property name="ws.jars" value="C:\Developing\Jar_files" />
+ 	
+ 	<!-- test.dest: where we should create all class files(executeble files) 
+ 	after code will be compile -->
+ 	<property name="test.dest" value="${ws.home}/Build" />
+ 	
+ 	<!-- test.src: where java files presented (source code) -->
+ 	<property name="test.src" value="${ws.home}/src"/>
+ 	
+ 	<!-- where ANT should generate HTML reports -->
+ 	<property name="ng.result" value="test-output" />
+ 		
+ 	
+ <target name="setClassPath" unless="test.classpath">
+	<path id="classpath_jars">
+	    <fileset dir="${ws.jars}" includes="*.jar" />
+	</path>
+	<pathconvert pathsep=":"
+	     property="test.classpath"
+	     refid="classpath_jars" />
+ </target> 
+ 	
+ <target name="init" depends="setClassPath">
+ 	    <tstamp>
+ 	        <format property="start.time" pattern="MM/dd/yyyy hh:mm aa" />
+ 	    </tstamp>
+ 	    <condition property="ANT"
+ 	        value="${env.ANT_HOME}/bin/ant.bat"
+ 	        else="${env.ANT_HOME}/bin/ant">
+ 	        	<os family="windows" />
+ 	     </condition>
+ 	  
+ 		<taskdef name="testng" classpath="${test.classpath}"	
+ 	 	    	classname="org.testng.TestNGAntTask" /> 
+ 	  
+ 	</target>
+ 	
+ 	<!-- clean -->
+ 	<target name="clean">
+ 	    <delete dir="${test.dest}"/>
+ 	</target>
+ 	
+ 	<!-- compile  -->
+	<target name="compile" depends="init, clean">
+	    <delete includeemptydirs="true" quiet="true">
+	        <fileset dir="${test.dest}" includes="**/*"/>
+	    </delete>
+	    <echo message="making directory..."/>
+	    <mkdir dir="${test.dest}"/>
+	    <echo message="classpath------: ${test.classpath}"/>
+	    <echo message="compiling..."/>
+	    <javac
+	        debug="true"
+	        destdir="${test.dest}"
+	        srcdir="${test.src}"
+	        target="1.8"
+	        classpath="${test.classpath}">	        
+	    </javac>
+	 </target>
+	   
+	   <!-- build -->
+	 <target name="build" depends="init">
+	 </target>
+	   	
+	   <!-- Run -->
+	  <target name="run" depends="compile">
+		    <echo> ws.home </echo>
+	   	    <testng classpath="${test.classpath}:${test.dest}" suitename="Yelp">
+	   	    	<xmlfileset dir="${ws.home}" includes="Testng.xml"/>
+	   	    </testng>
+	   </target>	
+	   
+	   
+	   <target name="usage">
+	       <echo>
+	           ant will execute the test
+	        </echo>
+	   </target>
+	        
+	     <path id="test.c">
+	         <fileset dir="${ws.jars}" includes="*.jar"/>
+	     </path>
+	     
+	    <target name="makesxsltreports">
+	        <mkdir dir="${ws.home}/XSLT_Reports/output"/>
+	        
+	        <xslt in="${ng.result}/testng-results.xml" style="src/xslt/testng-results.xsl"
+	            out="${ws.home}/XSLT_Reports/output/index.html" classpathref="test.c" processor="SaxonLiaison" >
+	            <param name="testNgXslt.outputDir" expression="${ws.home}/XSLT_Reports/output/"/>
+	            <param name="testNgXslt.showRuntimeTotals" expression="true"/>
+	         </xslt>
+	     </target>
+	      
+	 <!-- ***********************targets not used*********************************** -->
+ </project>
+	  

@@ -1,0 +1,14 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Yelp">
+
+<test name="Yelp PizzaTC">
+    
+   	<parameter name="restaurant_type" value="Restaurants"/>
+	<parameter name="food_type" value="Pizza"/>
+	
+	<classes>
+		<class name="testCases.PizzaTC"></class>
+	</classes>
+</test>
+
+</suite>
